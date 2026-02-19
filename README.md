@@ -1,5 +1,5 @@
 # data-analysis
-A script for microarray normalization in R
+# A script for microarray normalization in R
 Combine sample information
 sample_ids <- c(blca_sample_ids, normal_sample_ids)
 conditions <- c(blca_conditions, normal_conditions)
@@ -13,10 +13,7 @@ blca_files <- list.files("C:/Users/Dell/Documents/BLCA", pattern = ".tsv", full.
 > normal_sample_ids <- sub("^.*/Normal_(\\d+)\\.tsv$", "\\1", normal_files)
 > normal_conditions <- rep("Normal", length(normal_sample_ids))
 
-10-06-2023
-
-
-
+# 10-06-2023
 blca_files <- list.files("E:/BLCA", pattern = ".tsv", full.names = TRUE)
 > blca_sample_ids <- sub("^.*/BLCA_(\\d+)\\.tsv$", "\\1", blca_files)
 > blca_conditions <- rep("BLCA", length(blca_sample_ids))
@@ -76,7 +73,7 @@ sample_info <- data.frame(sample_id = character(),
 + sample_info <- rbind(sample_info, sample_data)
 + }
 
-11/06/2023
+# 11/06/2023
 blca_files <- list.files("E:/BLCA", pattern = ".tsv", full.names = TRUE)
 blca_counts <- lapply(blca_files, function(file) {
 +     data <- read.table(file, header = TRUE, sep = "\t", stringsAsFactors = FALSE)
@@ -105,7 +102,7 @@ count_matrix_normal <- do.call(rbind, normal_counts)
 
 count_matrix <- rbind(count_matrix_blca, count_matrix_normal)
 
-13/06/2023
+# 13/06/2023
 DEGs_df <- as.data.frame(DEGs)
 > 
 > upregulated_genes <- DEGs_df[DEGs_df$log2FoldChange > 0 & DEGs_df$padj < 0.05, ]
