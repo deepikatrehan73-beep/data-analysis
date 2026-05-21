@@ -1,10 +1,9 @@
-# Pipeline: TCGA-BLCA Transcriptomic Normalization and Hub Gene Identification
-# Author: Deepika Trehan
-# Description: Automated workflow for data acquisition, DESeq2 normalization, 
-#              and visualization of differentially expressed genes (DEGs).
+Pipeline: TCGA-BLCA Transcriptomic Normalization and Hub Gene Identification
+Author: Deepika Trehan
+Description: Automated workflow for data acquisition, DESeq2 normalization,and visualization of differentially expressed genes (DEGs).
 
 
-# 1. Environment Setup
+1. Environment Setup
 if (!require("BiocManager", quietly = TRUE)) install.packages("BiocManager")
 BiocManager::install(c("TCGAbiolinks", "DESeq2", "EnhancedVolcano", "SummarizedExperiment"))
 
@@ -12,8 +11,8 @@ library(TCGAbiolinks)
 library(DESeq2)
 library(EnhancedVolcano)
 
-# 2. Data Acquisition
-# Accessing Bladder Urothelial Carcinoma (BLCA) Harmonized Data [cite: 1, 1338]
+2. Data Acquisition
+Accessing Bladder Urothelial Carcinoma (BLCA) Harmonized Data [cite: 1, 1338]
 query <- GDCquery(
     project = "TCGA-BLCA",
     data.category = "Transcriptome Profiling",
@@ -23,23 +22,23 @@ query <- GDCquery(
 GDCdownload(query)
 data <- GDCprepare(query)
 
-# 3. Differential Expression Analysis (DESeq2)
-# Mimicking experimental knockdown by comparing tumor stages [cite: 1, 213, 1489]
+3. Differential Expression Analysis (DESeq2)
+Mimicking experimental knockdown by comparing tumor stages [cite: 1, 213, 1489]
 dds <- DESeqDataSet(data, design = ~ ajcc_pathologic_stage)
 
-# Filtering low-count genes to improve statistical power
+Filtering low-count genes to improve statistical power
 keep <- rowSums(counts(dds)) >= 10
 dds <- dds[keep,]
 
-# Execute normalization and differential expression
+Execute normalization and differential expression
 dds <- DESeq(dds)
 res <- results(dds)
 
-# Apply Log Fold Change (LFC) shrinkage for accurate visualization
+Apply Log Fold Change (LFC) shrinkage for accurate visualization
 resLFC <- lfcShrink(dds, coef=2, type="apeglm")
 
-# 4. Visualization: Volcano Plot
-# Highlighting key hub genes like VEGFA, CXCL8, and TP53 [cite: 1, 224, 1624]
+4. Visualization: Volcano Plot
+Highlighting key hub genes like VEGFA, CXCL8, and TP53 [cite: 1, 224, 1624]
 
 EnhancedVolcano(resLFC,
     lab = rownames(resLFC),
@@ -54,10 +53,10 @@ EnhancedVolcano(resLFC,
     col=c('grey', 'orange', 'blue', 'red')
 )
 
-# 5. Exporting Significant Gene List for Systems Biology Analysis
-# Filter for significant DEGs (FDR < 0.05, |log2FC| > 1) [cite: 1, 98, 1517]
+5. Exporting Significant Gene List for Systems Biology Analysis
+Filter for significant DEGs (FDR < 0.05, |log2FC| > 1) [cite: 1, 98, 1517]
 sig_genes <- subset(resLFC, padj < 0.05 & abs(log2FoldChange) > 1)
 write.csv(as.data.frame(sig_genes), "TCGA_BLCA_Significant_DEGs.csv")
 
-# NOTE: This list serves as the input for Cytoscape (MCODE) and CIBERSORT-X 
-# deconvolution workflows as described in Trehan et al. (2023) [cite: 1, 79, 1346].
+NOTE: This list serves as the input for Cytoscape (MCODE) and CIBERSORT-X 
+deconvolution workflows as described in Trehan et al. (2023) [cite: 1, 79, 1346].
